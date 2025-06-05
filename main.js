@@ -24,7 +24,9 @@ function captureChat() {
       if (BROADCAST_KEYWORDS.some(k => line.includes(k))) {
         if (!loggedMessages.includes(line)) {
           loggedMessages.push(line);
-          document.getElementById("log").innerHTML += `<li>${line}</li>`;
+          const li = document.createElement("li");
+          li.textContent = line;
+          document.getElementById("log").appendChild(li);
         }
       }
     });
@@ -34,8 +36,13 @@ function captureChat() {
 setInterval(captureChat, 10000);
 
 function exportToCSV() {
+  if (loggedMessages.length === 0) {
+    alert("No messages to export.");
+    return;
+  }
+
   const csvContent = "data:text/csv;charset=utf-8,"
-    + loggedMessages.map(e => `"\${e}"`).join("\n");
+    + loggedMessages.map(e => `"${e.replace(/"/g, '""')}"`).join("\n");
   
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
@@ -43,4 +50,10 @@ function exportToCSV() {
   link.setAttribute("download", "chat_log.csv");
   document.body.appendChild(link);
   link.click();
+  document.body.removeChild(link);
 }
+
+// Hook up export button
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("exportBtn").addEventListener("click", exportToCSV);
+});
