@@ -1,13 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Chat Logger</title>
   <script src="https://runeapps.org/lib/a1lib.js"></script>
   <script src="main.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 12px;
+      background: #1e1e2f;
+      color: #ddd;
+    }
+    h1 {
+      margin-bottom: 8px;
+      font-size: 22px;
+      text-align: center;
+      color: #9fcfff;
+    }
+    #instructions {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #bbb;
+      text-align: center;
+    }
+    #exportBtn {
+      display: block;
+      margin: 0 auto 16px auto;
+      padding: 10px 20px;
+      background-color: #3178c6;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      width: 150px;
+      text-align: center;
+      transition: background-color 0.3s ease;
+    }
+    #exportBtn:hover {
+      background-color: #215a94;
+    }
+    #log {
+      max-height: 300px;
+      overflow-y: auto;
+      background: #27293d;
+      border-radius: 6px;
+      padding: 10px;
+      list-style-type: none;
+      font-size: 13px;
+      line-height: 1.3;
+      border: 1px solid #444;
+    }
+    #log li {
+      margin-bottom: 6px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 4px;
+    }
+  </style>
 </head>
 <body>
   <h1>Chat Logger</h1>
-  <button onclick="exportToCSV()">Export to Excel</button>
+  <div id="instructions">
+    Make sure your RS3 broadcast chatbox is visible.<br/>
+    The plugin scans chat every 10 seconds for broadcasts and logs them here.
+  </div>
+  <button id="exportBtn">Export to CSV</button>
   <ul id="log"></ul>
 </body>
 </html>
