@@ -1,59 +1,37 @@
-if (window.alt1) {
-  alt1.identifyAppUrl("./appconfig.json");
-  alt1.setOverlay(false);
-}
+// Wait for DOM to load
+window.addEventListener("DOMContentLoaded", () => {
+  const logEl = document.getElementById("log");
+  const exportBtn = document.getElementById("exportBtn");
 
-const BROADCAST_KEYWORDS = [
-  "has received", "News:", "received a drop", "rare drop", "pet"
-];
-
-let loggedMessages = [];
-
-function captureChat() {
-  const cap = a1lib.captureHoldFullRs();
-  const ocr = new a1lib.Ocr();
-
-  ocr.loadFont("smallchars");
-
-  const text = ocr.readSmall(cap.canvas);
-
-  if (text && text.text) {
-    const lines = text.text.split("\n");
-
-    lines.forEach(line => {
-      if (BROADCAST_KEYWORDS.some(k => line.includes(k))) {
-        if (!loggedMessages.includes(line)) {
-          loggedMessages.push(line);
-          const li = document.createElement("li");
-          li.textContent = line;
-          document.getElementById("log").appendChild(li);
-        }
-      }
-    });
-  }
-}
-
-setInterval(captureChat, 10000);
-
-function exportToCSV() {
-  if (loggedMessages.length === 0) {
-    alert("No messages to export.");
+  if (!window.alt1) {
+    alert("Alt1 is not detected. Please open this plugin inside the Alt1 Toolkit.");
     return;
   }
 
-  const csvContent = "data:text/csv;charset=utf-8,"
-    + loggedMessages.map(e => `"${e.replace(/"/g, '""')}"`).join("\n");
-  
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", "chat_log.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-}
+  if (!alt1.chatbox || !alt1.chatbox.listen) {
+    alert("Alt1 chatbox API not available. Make sure Alt1 is allowed to access your RS client.");
+    return;
+  }
 
-// Hook up export button
-document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("exportBtn").addEventListener("click", exportToCSV);
+  alt1.chatbox.listen((data) => {
+    if (!data || data.channel !== "Broadcast" || !data.text) return;
+
+    const timestamp = new Date().toLocaleTimeString();
+    const entry = document.createElement("li");
+    entry.textContent = `${timestamp} - ${data.text}`;
+    logEl.appendChild(entry);
+  });
+
+  exportBtn.addEventListener("click", () => {
+    const rows = Array.from(logEl.children).map(li => li.textContent);
+    const csv = "data:text/csv;charset=utf-8," + rows.join("\n");
+    const encoded = encodeURI(csv);
+
+    const link = document.createElement("a");
+    link.setAttribute("href", encoded);
+    link.setAttribute("download", "broadcast_log.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
 });
