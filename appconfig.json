@@ -1,0 +1,7 @@
+{
+  "name": "Chat Logger",
+  "description": "Logs broadcast messages from the chatbox.",
+  "main": "index.html",
+  "icon": "icon.png",
+  "type": "app"
+}
